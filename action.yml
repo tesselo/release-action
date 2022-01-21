@@ -17,6 +17,9 @@ inputs:
     description: 'The directory where the code was fetched'
     required: false
     default: '.'
+  repo:
+    description: 'The repo as configured in Sentry'
+    required: true
   github_token:
     description: 'The GitHub token, might not be necessary'
     required: true
@@ -34,7 +37,7 @@ runs:
           sentry-cli releases new -p ${{ inputs.sentry_project}} ${{ inputs.sentry_release }}
           for COMMIT in $(cat ../.commits)
           do 
-            sentry-cli releases set-commits -c "${{ github.repo }}@${COMMIT}" "${{ inputs.sentry_release }}"
+            sentry-cli releases set-commits -c "${{ inputs.repo }}@${COMMIT}" "${{ inputs.sentry_release }}"
           done
           sentry-cli releases finalize ${{ inputs.sentry_release }}
           # Create new deploy for this Sentry release
