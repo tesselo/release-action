@@ -39,3 +39,4 @@ runs:
           sentry-cli releases finalize ${{ inputs.sentry_release }}
           # Create new deploy for this Sentry release
           sentry-cli releases deploys ${{ inputs.sentry_release }} new -e ${{ inputs.sentry_environment }}
+      shell: bash
