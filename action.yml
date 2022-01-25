@@ -43,7 +43,7 @@ runs:
               sentry-cli releases set-commits -c "${{ inputs.repo }}@${COMMIT}" "${{ inputs.sentry_release }}"
             done
           else
-              sentry-cli releases set-commits --local
+              sentry-cli releases set-commits ${{ inputs.sentry_release }} --local
           fi
           sentry-cli releases finalize ${{ inputs.sentry_release }}
           # Create new deploy for this Sentry release
