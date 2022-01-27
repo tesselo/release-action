@@ -1,0 +1,23 @@
+name: Recursive release action
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  sentry_release:
+    name: Sentry release
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out Git repository
+        uses: actions/checkout@v2
+      - name: Sentry Release 
+        uses: tesselo/release-action@main
+        with:
+          sentry_project: release-action
+          sentry_environment: 'staging'
+          sentry_release: ${{ github.sha }}
+        env:
+          SENTRY_ORG: 'tesselo'
+          SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
