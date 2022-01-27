@@ -17,34 +17,16 @@ inputs:
     description: 'The directory where the code was fetched'
     required: false
     default: '.'
-  repo:
-    description: 'The repo as configured in Sentry'
-    required: true
-  github_token:
-    description: 'The GitHub token, might not be necessary'
-    required: true
 runs:
   using: "composite"
   steps:
     - name: Sentry Release 
       run: |
-          cd ${{ inputs.code_dir }}
-          curl -s --url ${{ github.event.pull_request.commits_url }} \
-          --header 'authorization: Bearer ${{ inputs.github_token }}' | \
-          jq -r '.[].sha' > .commits
           curl -sL https://sentry.io/get-cli/ | bash
           # Create new Sentry release
-          sentry-cli releases new -p ${{ inputs.sentry_project}} ${{ inputs.sentry_release }}
-
-          if [ $(cat .commits | wc -l) -gt 0 ]
-          then
-            for COMMIT in $(cat .commits)
-            do 
-              sentry-cli releases set-commits -c "${{ inputs.repo }}@${COMMIT}" "${{ inputs.sentry_release }}"
-            done
-          else
-              sentry-cli releases set-commits ${{ inputs.sentry_release }} --local
-          fi
+          cd ${{ inputs.code_dir }}
+          sentry-cli releases new -p ${{ inputs.sentry_project }} ${{ inputs.sentry_release }}
+          sentry-cli releases set-commits --auto ${{ inputs.sentry_release }}
           sentry-cli releases finalize ${{ inputs.sentry_release }}
           # Create new deploy for this Sentry release
           sentry-cli releases deploys ${{ inputs.sentry_release }} new -e ${{ inputs.sentry_environment }}
